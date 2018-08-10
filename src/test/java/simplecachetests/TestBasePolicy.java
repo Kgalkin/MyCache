@@ -1,6 +1,6 @@
 package simplecachetests;
 
-import mycache.MyFileSystemCache;
+import mycache.FileSystemCache;
 import mycache.MemoryCache;
 import mycache.SimpleCache;
 import org.junit.After;
@@ -23,7 +23,7 @@ public class TestBasePolicy {
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] { {new MemoryCache<>(3)}, {new MyFileSystemCache<>(3)}});
+        return Arrays.asList(new Object[][] { {new MemoryCache<>(3)}, {new FileSystemCache<>(3)}});
     }
 
     public TestBasePolicy(SimpleCache<String, Integer> cache) {

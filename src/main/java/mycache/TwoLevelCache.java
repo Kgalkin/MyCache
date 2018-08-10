@@ -12,7 +12,7 @@ public class TwoLevelCache<K, V extends Serializable> implements Cache<K, V> {
     private final SimpleCache<K, V> secondLevelCache;
 
     public TwoLevelCache() {
-        this(new MemoryCache<>(), new MyFileSystemCache<>());
+        this(new MemoryCache<>(), new FileSystemCache<>());
     }
 
     public TwoLevelCache(SimpleCache<K, V> firstLevelCache, SimpleCache<K, V> secondLevelCache) {

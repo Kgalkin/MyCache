@@ -11,21 +11,21 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MyFileSystemCache<K, V extends Serializable> extends SimpleCache<K, V> {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(MyFileSystemCache.class);
+public class FileSystemCache<K, V extends Serializable> extends SimpleCache<K, V> {
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(FileSystemCache.class);
     private Path cacheDir;
     private Map<K, String> fileNames;
 
 
-    public MyFileSystemCache() {
+    public FileSystemCache() {
         this(10);
     }
 
-    public MyFileSystemCache(int maxSize) {
+    public FileSystemCache(int maxSize) {
         this(maxSize, new BasePolicy<>());
     }
 
-    public MyFileSystemCache(int maxSize, Policy<K, ?> policy){
+    public FileSystemCache(int maxSize, Policy<K, ?> policy){
         super(maxSize, policy);
         this.fileNames = new ConcurrentHashMap<>(maxSize);
         initCacheTempDirectory();
