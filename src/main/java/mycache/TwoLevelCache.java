@@ -30,6 +30,7 @@ public class TwoLevelCache<K, V extends Serializable> implements Cache<K, V> {
         Pair<K, V> removed = firstLevelCache.putAndReturnRemoved(key, value);
         if (removed != null) {
             secondLevelCache.put(removed.getKey(), removed.getValue());
+            log.debug("Move object to 2nd level: $s", removed.getKey());
         }
     }
 
