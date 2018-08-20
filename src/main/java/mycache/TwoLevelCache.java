@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 
+import static java.lang.String.format;
+
 public class TwoLevelCache<K, V extends Serializable> implements Cache<K, V> {
     private static final Logger log = LoggerFactory.getLogger(TwoLevelCache.class);
     private final SimpleCache<K, V> firstLevelCache;
@@ -15,7 +17,12 @@ public class TwoLevelCache<K, V extends Serializable> implements Cache<K, V> {
         this(new MemoryCache<>(), new FileSystemCache<>());
     }
 
+    public TwoLevelCache(int firstLevelSize, int secondLevelSize) {
+        this(new MemoryCache<>(firstLevelSize), new FileSystemCache<>(secondLevelSize));
+    }
+
     public TwoLevelCache(SimpleCache<K, V> firstLevelCache, SimpleCache<K, V> secondLevelCache) {
+        log.debug(format("Initializing TwoLevelCache with caches: 1stLevel: [%s]; 2ndLevel: [%s]", firstLevelCache.getClass().getName(), secondLevelCache.getClass().getName()));
         this.firstLevelCache = firstLevelCache;
         this.secondLevelCache = secondLevelCache;
     }
@@ -27,10 +34,13 @@ public class TwoLevelCache<K, V extends Serializable> implements Cache<K, V> {
 
     @Override
     public void put(K key, V value) {
+        if (secondLevelCache.contains(key)) {
+            secondLevelCache.remove(key);
+        }
         Pair<K, V> removed = firstLevelCache.putAndReturnRemoved(key, value);
         if (removed != null) {
+            log.debug(format("Moving object to 2nd level: key = [%s]", removed.getKey()));
             secondLevelCache.put(removed.getKey(), removed.getValue());
-            log.debug("Move object to 2nd level: $s", removed.getKey());
         }
     }
 
@@ -41,7 +51,13 @@ public class TwoLevelCache<K, V extends Serializable> implements Cache<K, V> {
 
     @Override
     public void clean() {
+        log.debug("Cleaning Two Level Cache");
         firstLevelCache.clean();
         secondLevelCache.clean();
+    }
+
+    @Override
+    public int size(){
+        return firstLevelCache.size() + secondLevelCache.size();
     }
 }

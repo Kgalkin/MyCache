@@ -1,0 +1,15 @@
+<Configuration>
+    <Properties>
+        <Property name="maven.logging.root.level">ALL</Property>
+    </Properties>
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t]: %m%n"/>
+        </Console>
+    </Appenders>
+    <loggers>
+        <root level="${sys:maven.logging.root.level}">
+            <appender-ref ref="console"/>
+        </root>
+    </loggers>
+</Configuration>

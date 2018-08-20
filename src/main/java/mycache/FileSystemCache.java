@@ -1,6 +1,6 @@
 package mycache;
 
-import mycache.cachepolicies.BasePolicy;
+import mycache.cachepolicies.LiveTimePolicy;
 import mycache.cachepolicies.Policy;
 import org.slf4j.LoggerFactory;
 
@@ -11,10 +11,12 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static java.lang.String.format;
+
 public class FileSystemCache<K, V extends Serializable> extends SimpleCache<K, V> {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(FileSystemCache.class);
     private Path cacheDir;
-    private Map<K, String> fileNames;
+    private final Map<K, String> fileNames;
 
 
     public FileSystemCache() {
@@ -22,10 +24,10 @@ public class FileSystemCache<K, V extends Serializable> extends SimpleCache<K, V
     }
 
     public FileSystemCache(int maxSize) {
-        this(maxSize, new BasePolicy<>());
+        this(maxSize, new LiveTimePolicy<>());
     }
 
-    public FileSystemCache(int maxSize, Policy<K, ?> policy){
+    public FileSystemCache(int maxSize, Policy<K> policy){
         super(maxSize, policy);
         this.fileNames = new ConcurrentHashMap<>(maxSize);
         initCacheTempDirectory();
@@ -49,7 +51,7 @@ public class FileSystemCache<K, V extends Serializable> extends SimpleCache<K, V
     @Override
     public void simplePut(K key, V value) {
         try {
-            File file = contains(key) ? getFile(key) : Files.createTempFile(cacheDir, "", "").toFile();
+            File file = contains(key) ? getFile(key) : Files.createTempFile(cacheDir, "cache", "").toFile();
             try (ObjectOutputStream objectOut = new ObjectOutputStream(new FileOutputStream(file, false))) {
                 objectOut.writeObject(value);
                 objectOut.flush();
@@ -83,7 +85,7 @@ public class FileSystemCache<K, V extends Serializable> extends SimpleCache<K, V
 
     private void deleteFileWithWarn(File file) {
         if (!file.delete()) {
-            log.debug("Failed to delete file : " + file.getName());
+            log.debug(format("Failed to delete file [%s]", file.getName()));
         }
     }
 
@@ -95,10 +97,10 @@ public class FileSystemCache<K, V extends Serializable> extends SimpleCache<K, V
         try (ObjectInputStream inStream = new ObjectInputStream(new FileInputStream(file))) {
             return (V) inStream.readObject();
         } catch (IOException e) {
-            log.error("Failed read file [%s] from cache directory %s", file, e);
+            log.error(format("Failed read file [%s] from cache directory %s", file, e));
             return null;
         } catch (ClassNotFoundException e) {
-            log.error("Failed read object [%s] from cached file %s", file, e);
+            log.error(format("Failed read object [%s] from cached file %s", file, e));
             return null;
         }
     }

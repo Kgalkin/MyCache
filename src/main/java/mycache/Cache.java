@@ -1,7 +1,5 @@
 package mycache;
 
-import javafx.util.Pair;
-
 public interface Cache<K, V> {
 
     V get(K key);
@@ -11,5 +9,7 @@ public interface Cache<K, V> {
     V remove(K key);
 
     void clean();
+
+    int size();
 
 }

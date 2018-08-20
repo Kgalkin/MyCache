@@ -1,6 +1,6 @@
 package mycache;
 
-import mycache.cachepolicies.BasePolicy;
+import mycache.cachepolicies.LiveTimePolicy;
 import mycache.cachepolicies.Policy;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentMap;
 
 
 public class MemoryCache<K, V>  extends SimpleCache<K, V> {
-    private ConcurrentMap<K, V> cacheMap;
+    private final ConcurrentMap<K, V> cacheMap;
 
 
     public MemoryCache(){
@@ -16,10 +16,10 @@ public class MemoryCache<K, V>  extends SimpleCache<K, V> {
     }
 
     public MemoryCache(int maxSize) {
-       this(maxSize, new BasePolicy<>());
+       this(maxSize, new LiveTimePolicy<>());
     }
 
-    public MemoryCache(int maxSize, Policy<K, ?> policy){
+    public MemoryCache(int maxSize, Policy<K> policy){
         super(maxSize, policy);
         cacheMap = new ConcurrentHashMap<>(maxSize);
     }
