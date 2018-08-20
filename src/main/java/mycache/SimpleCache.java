@@ -5,8 +5,6 @@ import mycache.cachepolicies.Policy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.lang.String.format;
-
 public abstract class SimpleCache<K, V> implements Cache<K, V> {
     private static final Logger log = LoggerFactory.getLogger(SimpleCache.class);
     private int maxSize;
@@ -16,16 +14,16 @@ public abstract class SimpleCache<K, V> implements Cache<K, V> {
         if (maxSize <= 0){
             throw new IllegalArgumentException("Cache size should be >= 1");
         }
-        log.debug(format("Initializing cache: [%s]; with policy: [%s] ", this.getClass().getCanonicalName(), policy.getClass().getName()));
+        log.debug("Initializing cache: [{}]; with policy: [{}] ", this.getClass().getCanonicalName(), policy.getClass().getName());
         this.maxSize = maxSize;
         this.policy = policy;
     }
 
     @Override
     public synchronized V get(K key) {
-        log.debug(format("Getting value from cache: [%s]; key = [%s] ", this.getClass().getName(), key));
+        log.debug("Getting value from cache: [{}]; key = [{}] ", this.getClass().getName(), key);
         if (!contains(key)) {
-            log.debug("Getting value from cache, value does not present in cache: [%s]; key = [%s] ", this.getClass().getName(), key);
+            log.debug("Getting value from cache, value does not present in cache: [{}]; key = [{}] ", this.getClass().getName(), key);
             return null;
         }
         policy.onGet(key);
@@ -52,14 +50,14 @@ public abstract class SimpleCache<K, V> implements Cache<K, V> {
 
     @Override
     public synchronized V remove(K key) {
-        log.debug(format("Removing value from cache: [%s]; key = [%s] ", this.getClass().getName(), key));
+        log.debug("Removing value from cache: [{}]; key = [{}] ", this.getClass().getName(), key);
         policy.onRemove(key);
         return simpleRemove(key);
     }
 
     @Override
     public synchronized void clean() {
-        log.debug(format("Cleaning cache: [%s]", this.getClass().getName()));
+        log.debug("Cleaning cache: [{}]", this.getClass().getName());
         policy.onClean();
         simpleClean();
     }
@@ -81,7 +79,7 @@ public abstract class SimpleCache<K, V> implements Cache<K, V> {
     }
 
     private void putAndLog(K key, V value) {
-        log.debug(format("Putting value to cache: [%s]; key = [%s] ", this.getClass().getName(), key));
+        log.debug("Putting value to cache: [{}]; key = [{}] ", this.getClass().getName(), key);
         policy.onPut(key);
         simplePut(key, value);
     }

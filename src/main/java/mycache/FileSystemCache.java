@@ -11,8 +11,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static java.lang.String.format;
-
 public class FileSystemCache<K, V extends Serializable> extends SimpleCache<K, V> {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(FileSystemCache.class);
     private Path cacheDir;
@@ -85,7 +83,7 @@ public class FileSystemCache<K, V extends Serializable> extends SimpleCache<K, V
 
     private void deleteFileWithWarn(File file) {
         if (!file.delete()) {
-            log.debug(format("Failed to delete file [%s]", file.getName()));
+            log.debug("Failed to delete file [{}]", file.getName());
         }
     }
 
@@ -97,10 +95,10 @@ public class FileSystemCache<K, V extends Serializable> extends SimpleCache<K, V
         try (ObjectInputStream inStream = new ObjectInputStream(new FileInputStream(file))) {
             return (V) inStream.readObject();
         } catch (IOException e) {
-            log.error(format("Failed read file [%s] from cache directory %s", file, e));
+            log.error("Failed read file [{}] from cache directory {}", file, e);
             return null;
         } catch (ClassNotFoundException e) {
-            log.error(format("Failed read object [%s] from cached file %s", file, e));
+            log.error("Failed read object [{}] from cached file {}", file, e);
             return null;
         }
     }

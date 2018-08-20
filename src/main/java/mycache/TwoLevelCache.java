@@ -6,8 +6,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 
-import static java.lang.String.format;
-
 public class TwoLevelCache<K, V extends Serializable> implements Cache<K, V> {
     private static final Logger log = LoggerFactory.getLogger(TwoLevelCache.class);
     private final SimpleCache<K, V> firstLevelCache;
@@ -22,7 +20,7 @@ public class TwoLevelCache<K, V extends Serializable> implements Cache<K, V> {
     }
 
     public TwoLevelCache(SimpleCache<K, V> firstLevelCache, SimpleCache<K, V> secondLevelCache) {
-        log.debug(format("Initializing TwoLevelCache with caches: 1stLevel: [%s]; 2ndLevel: [%s]", firstLevelCache.getClass().getName(), secondLevelCache.getClass().getName()));
+        log.debug("Initializing TwoLevelCache with caches: 1stLevel: [{}]; 2ndLevel: [{}]", firstLevelCache.getClass().getName(), secondLevelCache.getClass().getName());
         this.firstLevelCache = firstLevelCache;
         this.secondLevelCache = secondLevelCache;
     }
@@ -39,7 +37,7 @@ public class TwoLevelCache<K, V extends Serializable> implements Cache<K, V> {
         }
         Pair<K, V> removed = firstLevelCache.putAndReturnRemoved(key, value);
         if (removed != null) {
-            log.debug(format("Moving object to 2nd level: key = [%s]", removed.getKey()));
+            log.debug("Moving object to 2nd level: key = [{}]", removed.getKey());
             secondLevelCache.put(removed.getKey(), removed.getValue());
         }
     }
